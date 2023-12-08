@@ -1,0 +1,45 @@
+import requests
+import re
+from geopy.geocoders import Nominatim
+
+geolocator = Nominatim(user_agent="geolocator")
+
+url = "http://www.insecam.org/en/jsoncountries/"
+
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
+}
+
+resp = requests.get(url, headers=headers)
+data = resp.json()
+countries = data['countries']
+
+print("AISTEVE")
+
+for key, value in countries.items():
+    print(f'Код: ({key}) - {value["country"]} / ({value["count"]})')
+
+country_code = input("Код(##): ")
+
+try:
+    res = requests.get(f"http://www.insecam.org/en/bycountry/{country_code}", headers=headers)
+    last_page = re.findall(r'pagenavigator\("\?page=", (\d+)', res.text)[0]
+
+    for page in range(int(last_page)):
+        res = requests.get(f"http://www.insecam.org/en/bycountry/{country_code}/?page={page}", headers=headers)
+        find_ip = re.findall(r"http://\d+.\d+.\d+.\d+:\d+", res.text)
+
+        with open(f'{country_code}.txt', 'w', encoding='utf-8') as f:
+            for ip in find_ip:
+                location = geolocator.geocode(ip.split(':')[0])
+                if location:
+                    city = location.raw.get('address', {}).get('city', 'Unknown')
+                    capital = location.raw.get('address', {}).get('state', 'Unknown')
+                    print(f"\033[1;31m{ip}\033[0m - Град: {city} / Столица: {capital}")
+                    f.write(f'{ip} - Град: {city} / Столица: {capital}\n')
+
+except Exception as e:
+    print(f"Възникна грешка: {e}")
+
+finally:
+    print(f"Записан файл: {country_code}.txt")

@@ -1,0 +1,2 @@
+pip install --upgrade requests
+pip install --upgrade geopy

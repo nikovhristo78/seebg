@@ -1,1 +1,0 @@
-cd seebg/seebg  pip install requests geopy  python seebg.py

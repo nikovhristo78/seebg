@@ -1,1 +1,9 @@
-git clone https://github.com/nikovhristo78/seebg.git cd seebg/seebg  pip install requests geopy  python seebg.py
+git clone https://github.com/nikovhristo78/seebg.git
+
+cd seebg/seebg
+
+
+pip install requests geopy
+
+python seebg.py
+
